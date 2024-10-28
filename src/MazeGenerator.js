@@ -5,6 +5,7 @@ export const MAZE_ALGORITHMS = {
 
 const FRONTIER_DIRECTIONS = [[0, 1] , [1, 0], [0, -1], [-1, 0]];
 
+const KRUSKAL_DIRECTIONS = [[0, 1] , [1, 0]];
 
 Object.freeze(MAZE_ALGORITHMS);
 
@@ -92,8 +93,60 @@ export class MazeGenerator {
 
     // Placeholder for Kruskal's algorithm implementation
     kruskalMaze(board) {
-        console.log('Kruskal\'s maze generation to be implemented');
-        // Implementation will go here
+        // 1. Initialize each cell with unique set ID
+        const cell_flags = [];
+        const frontier_list = [];
+        let setId = 0;
+        
+        for (let i = 0; i < board.rows; i++) {
+            cell_flags.push([]);
+            for (let j = 0; j < board.cols; j++) {
+                // Give each cell a unique set ID
+                cell_flags[i].push(i % 2 === 0 && j % 2 === 0 ? setId++ : -1);
+                
+                // Only consider cells that can be part of the maze (even coordinates)
+                if (i % 2 === 0 && j % 2 === 0) {
+                    const cell = board.getCell(i, j);
+                    const frontiers = KRUSKAL_DIRECTIONS.map(direction => ({
+                        row: cell.row + direction[0] * 2,
+                        col: cell.col + direction[1] * 2,
+                        direction: direction,
+                        fromRow: cell.row,
+                        fromCol: cell.col
+                    })).filter(frontier => this.isValidFrontier(board, frontier));
+                    frontier_list.push(...frontiers);
+                }
+            }
+        }
+        
+        while (frontier_list.length > 0) {
+            const randomIndex = Math.floor(Math.random() * frontier_list.length);
+            const frontier = frontier_list[randomIndex];
+            frontier_list.splice(randomIndex, 1);
+            
+            const set1 = cell_flags[frontier.fromRow][frontier.fromCol];
+            const set2 = cell_flags[frontier.row][frontier.col];
+            
+            // Only connect cells from different sets
+            if (set1 !== set2 && set1 !== -1 && set2 !== -1) {
+                // Carve the path
+                board.toggleWall(board.getCell(frontier.row, frontier.col).dom, false);
+                board.toggleWall(board.getCell(
+                    frontier.fromRow + frontier.direction[0],
+                    frontier.fromCol + frontier.direction[1]
+                ).dom, false);
+                
+                // Merge sets
+                const oldSet = set2;
+                for (let i = 0; i < cell_flags.length; i++) {
+                    for (let j = 0; j < cell_flags[i].length; j++) {
+                        if (cell_flags[i][j] === oldSet) {
+                            cell_flags[i][j] = set1;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     initializeMazeSelector(selector) {
