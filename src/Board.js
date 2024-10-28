@@ -1,3 +1,6 @@
+const START_SYMBOL = ">";
+const TARGET_SYMBOL = "X";
+const WALL_CLASS = "wall";
 
 export class Board {
     constructor(element_id, rows, cols) {
@@ -7,6 +10,8 @@ export class Board {
         this.currentDelay = 0;
         this.start_cell = null;
         this.target_cell = null;
+        this.isMouseDown = false;
+        this.addWallEventListeners();
     }
 
     // Initializations, reset board etc
@@ -26,6 +31,7 @@ export class Board {
     resetBoard()
     {
         this.clearBoard();
+        this.clearWalls();
         this.resetDelayTime();
         this.resetStartAndTarget();
         this.generateStartAndTarget();
@@ -42,6 +48,18 @@ export class Board {
                 cell.classList.remove("shortestPath");
             }
         }
+        this.resetDelayTime();
+    }
+
+    clearWalls() {
+        for (let i = 0 ; i < this.rows; i++)
+        {
+            for (let j = 0; j < this.cols; j++)
+            {
+                const cell = this.board.rows[i].cells[j];
+                cell.classList.remove(WALL_CLASS);
+            }
+        }
     }
 
     resetStartAndTarget()
@@ -56,7 +74,7 @@ export class Board {
             this.target_cell.dom.innerText="";
         }
         this.start_cell = null;
-        this.end_cell = null;
+        this.target_cell = null;
     }
     // visualizing paths
 
@@ -85,34 +103,86 @@ export class Board {
 
     // algorithms
 
-    valid_cell(cell)
-    {
-        return cell.row >= 0 && cell.col >= 0 && cell.row < this.rows && cell.col < this.cols;
+    valid_cell(cell) {
+        // Check if out of bounds
+        if (cell.row < 0 || cell.col < 0 || cell.row >= this.rows || cell.col >= this.cols) {
+            return false;
+        }
+        
+        return true;
     }
 
-    get_random_cell()
+    getRandomCell()
     {
         let row = Math.floor(Math.random() * this.rows);
         let col = Math.floor(Math.random() * this.cols);
         return { row, col};
     }
 
+    getCell(row, col) {
+        return {
+            dom: this.board.rows[row].cells[col],
+            row,
+            col
+        };
+
+    }
+
     generateStartAndTarget()
     {
-        let start_cell = this.get_random_cell();
+        let start_cell = this.getRandomCell();
         this.start_cell = start_cell;
         this.start_cell.dom = this.board.rows[start_cell.row].cells[start_cell.col];
-        this.start_cell.dom.innerText = ">";
+        this.start_cell.dom.innerText = START_SYMBOL;
 
         let target_cell = { row: start_cell.row, col: start_cell.col };
         while (target_cell.row === start_cell.row && target_cell.col === start_cell.col)
         {
-            (target_cell = this.get_random_cell());
+            (target_cell = this.getRandomCell());
         }
         this.target_cell = target_cell;
         this.target_cell.dom = this.board.rows[target_cell.row].cells[target_cell.col];
-        this.target_cell.dom.innerText = "x";
+        this.target_cell.dom.innerText = TARGET_SYMBOL;
     }
 
+    addWallEventListeners() {
+        this.board.addEventListener('dragstart', (e) => e.preventDefault());
+        
+        this.board.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            this.isMouseDown = true;
+            if (e.target.tagName === 'TD') {
+                this.toggleWall(e.target);
+            }
+        });
 
+        this.board.addEventListener('mouseover', (e) => {
+            if (this.isMouseDown && e.target.tagName === 'TD') {
+                this.toggleWall(e.target);
+            }
+        });
+
+        window.addEventListener('mouseup', () => {
+            this.isMouseDown = false;
+        });
+    }
+
+    toggleWall(cell) {
+        if (cell.innerText === START_SYMBOL || cell.innerText === TARGET_SYMBOL) {
+            return;
+        }
+        cell.classList.toggle(WALL_CLASS);
+    }
+
+    isWall(cell) {
+        return this.board.rows[cell.row].cells[cell.col].classList.contains(WALL_CLASS);
+    }
+
+    isTarget(cell) {
+        return cell.row === this.target_cell.row && cell.col === this.target_cell.col;
+    }
+
+    isStart(cell) {
+        return cell.row === this.start_cell.row && cell.col === this.start_cell.col;
+    }
 }

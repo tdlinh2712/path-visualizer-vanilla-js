@@ -1,12 +1,28 @@
 import { Board } from './Board.js';
-import { AlgorithmFactory } from "./Algorithms.js";
+import { AlgorithmFactory } from './Algorithms.js';
+import { PriorityQueue } from './PriorityQueue.js';
+import './AlgorithmHelper.js'; 
+import { MazeGenerator } from './MazeGenerator.js';
 
-let rows = 20;
-let cols = 30;
+// Calculate grid size based on window size and cell size
+const CELL_SIZE = 25; // pixels
+const PADDING = 200;   // pixels for padding/margins
 
+function calculateGridSize() {
+    const availableWidth = window.innerWidth - PADDING;
+    const availableHeight = window.innerHeight - PADDING;
+    
+    const cols = Math.floor(availableWidth / CELL_SIZE);
+    const rows = Math.floor(availableHeight / CELL_SIZE);
+    
+    return { rows, cols };
+}
+
+// Use the calculated size
+const { rows, cols } = calculateGridSize();
 const board = new Board("board", rows, cols);
 
-const algoirthm_factory = new AlgorithmFactory();
+const algorithm_factory = new AlgorithmFactory();
 
 board.initializeElements();
 
@@ -17,16 +33,13 @@ const start_button = document.getElementById("start-btn");
 
 const reset_button = document.getElementById("reset-btn");
 
-// const Algorithm = Object.freeze({
-//     BFS:   Symbol("bfs"),
-//     DFS:  Symbol("dfs"),
-//     DIJIKSTRA: Symbol("dijikstra")
-// });
-
-let selected_algorithm = "bfs";
-
 const algorithm_button = document.getElementById("algorithm-btn");
 
+algorithm_factory.initializeAlgorithmSelector(algorithm_button);
+
+algorithm_button.addEventListener("change", () => {
+    algorithm_factory.setAlgorithm(algorithm_button.value);
+})
 
 reset_button.addEventListener("click", () => {
     board.resetBoard(board);
@@ -35,34 +48,29 @@ reset_button.addEventListener("click", () => {
 start_button.addEventListener("click", () => {
     // clear all current css
     board.clearBoard();
-    let visited_nodes = [];
-    let found_path = [];
-    // try bfs
-    switch (selected_algorithm) {
-        case "bfs":
-        {
-            ({visited_nodes, found_path} = AlgorithmFactory.bfs(board, board.start_cell, board.target_cell));
-            break;
-        }
-        case "dfs":
-        {
-            break;
-        }
-        case "dijikstra":
-        {
-            break;
-        }
-    }
-
-
+    const { visited_nodes, found_path } = algorithm_factory.findPath(board, board.start_cell, board.target_cell);
     board.visualizeVisitedNodes(visited_nodes);
     board.visualizeFoundPath(found_path);
 });
 
-algorithm_button.addEventListener("change", () => {
-    selected_algorithm = algorithm_button.value;
-    console.log(selected_algorithm);
-})
+const maze_generator = new MazeGenerator();
+const maze_button = document.getElementById("maze-btn");
+const generate_maze_button = document.getElementById("generate-maze-btn");
+
+// Initialize maze selector
+maze_generator.initializeMazeSelector(maze_button);
+
+// Add event listeners
+maze_button.addEventListener("change", () => {
+    maze_generator.setAlgorithm(maze_button.value);
+});
+
+generate_maze_button.addEventListener("click", () => {
+    board.clearWalls();
+    maze_generator.generateMaze(board);
+});
+
+
 
 
 

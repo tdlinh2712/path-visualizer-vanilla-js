@@ -9,62 +9,41 @@
   <link rel="stylesheet" href="./public/style.css">
 </head>
 <body>
-<header class="logo">
-</header>
-<main id="app">
-  <h1 class="title">
-    Path finding visualizer. <br /> Visualizing Dijikstra.
-  </h1>
-  <section class="counter">
-    <div id='mainGrid'>
-      <div id='mainText'>
-        <ul>
-          <li>
-            <div class="start"></div>Start Node
-          </li>
-          <li>
-            <div class="target"></div>Target Node
-          </li>
-          <li id="bombLegend">
-            <div class="object"></div>Bomb Node
-          </li>
-          <li id="weightLegend">
-            <div class="borderlessWeight"></div>Weight Node
-          </li>
-          <li>
-            <div class="unvisited"></div>Unvisited Node
-          </li>
-          <li>
-            <div class="visited"></div>
-            <div class="visitedobject"></div>Visited Nodes
-          </li>
-          <li>
-            <div class="shortest-path"></div>Shortest-path Node
-          </li>
-          <li>
-            <div class="wall"></div>Wall Node
-          </li>
-        </ul>
+  <div class="container">
+    <header>
+      <h1 class="title">Path Finding Visualizer</h1>
+    </header>
+
+    <main id="app">
+      <div class="controls">
+        <div class="control-group">
+          <div id="algorithmDescriptor">Pick an algorithm and visualize it!</div>
+          <div class="algorithm-selector">
+            <label for="algorithm-btn">Choose an algorithm:</label>
+            <select name="algorithm-btn" id="algorithm-btn"></select>
+          </div>
+        </div>
+        
+        <div class="button-group">
+          <button id="start-btn" class="btn">Start</button>
+          <button id="reset-btn" class="btn">Reset Board</button>
+        </div>
+        
+        <!-- Add this inside your controls div, after the algorithm selector -->
+        <div class="control-group">
+            <div class="maze-selector">
+                <label for="maze-btn">Generate Maze:</label>
+                <select name="maze-btn" id="maze-btn"></select>
+            </div>
+            <button id="generate-maze-btn" class="btn">Generate Maze</button>
+        </div>
       </div>
-      <div id="algorithmDescriptor">Pick an algorithm and visualize it!</div>
-      <button id="start-btn">Start</button>
-      <button id="reset-btn">Reset board</button>
 
-      <label for="algorithm-btn">Choose an algorithm:</label>
-
-      <select name="algorithm-btn" id="algorithm-btn">
-        <option value="bfs">BFS</option>
-        <option value="dfs">DFS</option>
-        <option value="dijikstra">Dijikstra</option>
-      </select>
-      <br><br>
-
-      <table id='board'></table>
-    </div>
-  </section>
-</main>
-<script type="module" src="/src/main.js"></script>
-<script type="module" src="/src/Board.js"></script>
-<script type="module" src="/src/Algorithms.js"></script>
+      <div class="grid-container">
+        <table id="board"></table>
+      </div>
+    </main>
+  </div>
+  <script type="module" src="/src/main.js"></script>
 </body>
 </html>
