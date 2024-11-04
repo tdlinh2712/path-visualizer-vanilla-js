@@ -12,8 +12,9 @@ function calculateGridSize() {
     const availableWidth = window.innerWidth - PADDING;
     const availableHeight = window.innerHeight - PADDING;
     
-    const cols = Math.floor(availableWidth / CELL_SIZE);
-    const rows = Math.floor(availableHeight / CELL_SIZE);
+    // Floor to nearest odd number by dividing by 2, flooring, multiplying by 2, and adding 1 so that the maze is always odd number of rows and columns 
+    const cols = Math.floor(availableWidth / CELL_SIZE / 2) * 2 + 1;
+    const rows = Math.floor(availableHeight / CELL_SIZE / 2) * 2 + 1;
     
     return { rows, cols };
 }

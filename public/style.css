@@ -274,3 +274,52 @@ header {
 #generate-maze-btn:hover {
     background-color: #7d6cf9;
 }
+
+.start-cell {
+    background: linear-gradient(45deg, #2ecc71, #27ae60);
+    position: relative;
+    overflow: hidden;
+}
+
+.start-cell::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 0;
+    height: 0;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-left: 12px solid white;
+}
+
+.target-cell {
+    background: linear-gradient(45deg, #e74c3c, #c0392b);
+    position: relative;
+    overflow: hidden;
+}
+
+.target-cell::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 12px;
+    height: 12px;
+    border: 2px solid white;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}

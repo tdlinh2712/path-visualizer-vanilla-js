@@ -34,8 +34,11 @@ export class MazeGenerator {
                 console.error('Unknown maze generation algorithm');
                 return;
         }
+        // set begining cell and ending cell as start and target
         setTimeout(() => {
-            board.generateStartAndTarget();
+            let start_cell = { row: 0, col: 0 };
+            let target_cell = { row: board.rows - 1, col: board.cols - 1 };
+            board.setStartAndTarget(start_cell, target_cell);
         }, this.currentDelay);
     }
 
@@ -67,8 +70,10 @@ export class MazeGenerator {
 
     // Placeholder for Prim's algorithm implementation
     primMaze(board) {
-        // 1. Pick a random cell as the starting point
-        const start_cell = board.getRandomCell();
+        // 1. Get a random even-numbered cell as the starting point
+        const evenRow = 2 * Math.floor(Math.random() * Math.floor(board.rows / 2));
+        const evenCol = 2 * Math.floor(Math.random() * Math.floor(board.cols / 2));
+        const start_cell = board.getCell(evenRow, evenCol);
         // Keep track of visited cells to prevent loops
         const visited_cells = new Set();
         visited_cells.add(`${start_cell.row},${start_cell.col}`);

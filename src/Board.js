@@ -1,5 +1,3 @@
-const START_SYMBOL = ">";
-const TARGET_SYMBOL = "X";
 const WALL_CLASS = "wall";
 
 export class Board {
@@ -63,14 +61,11 @@ export class Board {
 
     resetStartAndTarget()
     {
-        // if currently there's a start and end node, we need to reset the content of that node
-        if (this.start_cell != null)
-        {
-            this.start_cell.dom.innerText="";
+        if (this.start_cell != null) {
+            this.start_cell.dom.classList.remove('start-cell');
         }
-        if (this.target_cell != null)
-        {
-            this.target_cell.dom.innerText="";
+        if (this.target_cell != null) {
+            this.target_cell.dom.classList.remove('target-cell');
         }
         this.start_cell = null;
         this.target_cell = null;
@@ -80,6 +75,9 @@ export class Board {
     visualizeVisitedNodes(visitedNodes)
     {
         visitedNodes.forEach((cell, i) => {
+            if (this.isStart(cell) || this.isTarget(cell)) {
+                return;
+            }
             const cell_dom = this.board.rows[cell.row].cells[cell.col];
             setTimeout(() => {
                 cell_dom.className = "visitedNode";
@@ -92,7 +90,10 @@ export class Board {
     visualizeFoundPath(foundPath)
     {
         foundPath.forEach((cell, i) => {
-            const cell_dom = board.rows[cell.row].cells[cell.col];
+            if (this.isStart(cell) || this.isTarget(cell)) {
+                return;
+            }
+            const cell_dom = this.board.rows[cell.row].cells[cell.col];
             setTimeout(() => {
                 cell_dom.className = "shortestPath";
             }, i * 5 + this.currentDelay);
@@ -133,18 +134,22 @@ export class Board {
         do {
             start_cell = this.getRandomCell();
         } while (this.isWall(this.getCell(start_cell.row, start_cell.col)));
-        this.start_cell = start_cell;
-        this.start_cell.dom = this.board.rows[start_cell.row].cells[start_cell.col];
-        this.start_cell.dom.innerText = START_SYMBOL;
-
         let target_cell = null;
         do {
             target_cell = this.getRandomCell();
         } while ((target_cell.row === start_cell.row && target_cell.col === start_cell.col) || this.isWall(this.getCell(target_cell.row, target_cell.col)));
+        this.setStartAndTarget(start_cell, target_cell);
+    }
+
+    setStartAndTarget(start_cell, target_cell) {
+        this.resetStartAndTarget();
+        this.start_cell = start_cell;
+        this.start_cell.dom = this.board.rows[start_cell.row].cells[start_cell.col];
+        this.start_cell.dom.classList.add('start-cell');
 
         this.target_cell = target_cell;
         this.target_cell.dom = this.board.rows[target_cell.row].cells[target_cell.col];
-        this.target_cell.dom.innerText = TARGET_SYMBOL;
+        this.target_cell.dom.classList.add('target-cell');
     }
 
     addWallEventListeners() {
@@ -170,10 +175,20 @@ export class Board {
     }
 
     toggleWall(cell) {
-        if (cell.innerText === START_SYMBOL || cell.innerText === TARGET_SYMBOL) {
+        // Get the row and column from the cell's position in the table
+        const row = cell.parentNode.rowIndex;
+        const col = cell.cellIndex;
+        
+        // Compare with stored start and target cell coordinates
+        if ((this.start_cell && row === this.start_cell.row && col === this.start_cell.col) ||
+            (this.target_cell && row === this.target_cell.row && col === this.target_cell.col)) {
             return;
         }
-        cell.classList.add(WALL_CLASS);
+        if (cell.classList.contains(WALL_CLASS)) {
+            this.untoggleWall(cell);
+        } else {    
+            cell.classList.add(WALL_CLASS);
+        }
     }
 
     untoggleWall(cell) {
