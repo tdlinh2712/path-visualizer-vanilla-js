@@ -27,6 +27,7 @@ const algorithm_factory = new AlgorithmFactory();
 board.initializeElements();
 
 board.resetBoard();
+board.generateStartAndTarget();
 
 
 const start_button = document.getElementById("start-btn");
@@ -42,7 +43,8 @@ algorithm_button.addEventListener("change", () => {
 })
 
 reset_button.addEventListener("click", () => {
-    board.resetBoard(board);
+    board.resetBoard();
+    board.generateStartAndTarget();
 });
 
 start_button.addEventListener("click", () => {
@@ -66,7 +68,6 @@ maze_button.addEventListener("change", () => {
 });
 
 generate_maze_button.addEventListener("click", () => {
-    board.clearWalls();
     maze_generator.generateMaze(board);
 });
 

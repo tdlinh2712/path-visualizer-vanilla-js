@@ -5,7 +5,10 @@ export const MAZE_ALGORITHMS = {
 
 const FRONTIER_DIRECTIONS = [[0, 1] , [1, 0], [0, -1], [-1, 0]];
 
-const KRUSKAL_DIRECTIONS = [[0, 1] , [1, 0]];
+const KRUSKAL_DIRECTIONS = {
+    HORIZONTAL: [0, 1],
+    VERTICAL: [1, 0]
+};
 
 Object.freeze(MAZE_ALGORITHMS);
 
@@ -19,24 +22,47 @@ export class MazeGenerator {
     }
 
     generateMaze(board) {
-        board.clearBoard();
+        this.initializeMaze(board);
         switch(this.currentAlgorithm) {
-            case MAZE_ALGORITHMS.PRIM:
-                return this.primMaze(board);
+            case MAZE_ALGORITHMS.PRIM: 
+                this.primMaze(board);
+                break;
             case MAZE_ALGORITHMS.KRUSKAL:
-                return this.kruskalMaze(board);
+                this.kruskalMaze(board);
+                break;
             default:
                 console.error('Unknown maze generation algorithm');
                 return;
         }
+        setTimeout(() => {
+            board.generateStartAndTarget();
+        }, this.currentDelay);
+    }
+
+    animateMaze(board, frontiers) {
+        setTimeout(() => {
+            frontiers.forEach(frontier => {
+                if (frontier.dom) {
+                    frontier.dom.classList.add('maze-reveal');
+                    board.untoggleWall(frontier.dom);
+                }
+            });
+        }, this.currentDelay);
+        this.currentDelay += 10;
+    }
+
+    initializeMaze(board) {
+        this.currentDelay = 0;
+        board.resetBoard();
+        for (let i = 0; i < board.rows; i++) {
+            for (let j = 0; j < board.cols; j++) {
+                board.toggleWall(board.getCell(i, j).dom);
+            }
+        }
     }
 
     isValidFrontier(board, frontier) {
-        return board.valid_cell(frontier) && !board.isWall(frontier);
-    }
-
-    isValidNonWallCell(board, cell) {
-        return board.valid_cell(cell) && !board.isWall(cell) && !board.isTarget(cell) && !board.isStart(cell);
+        return board.valid_cell(frontier) && board.isWall(frontier);
     }
 
     // Placeholder for Prim's algorithm implementation
@@ -74,9 +100,8 @@ export class MazeGenerator {
                 };
                 
                 inBetweenCell.dom = board.getCell(inBetweenCell.row, inBetweenCell.col).dom;
-                board.toggleWall(inBetweenCell.dom, false);
                 frontier.dom = board.getCell(frontier.row, frontier.col).dom;
-                board.toggleWall(frontier.dom, false);
+                this.animateMaze(board, [frontier, inBetweenCell ]);
                 // Add new frontiers 2 cells out
                 FRONTIER_DIRECTIONS.forEach(direction => {
                     const newFrontier = {
@@ -94,59 +119,71 @@ export class MazeGenerator {
     // Placeholder for Kruskal's algorithm implementation
     kruskalMaze(board) {
         // 1. Initialize each cell with unique set ID
-        const cell_flags = [];
         const frontier_list = [];
-        let setId = 0;
-        
-        for (let i = 0; i < board.rows; i++) {
-            cell_flags.push([]);
-            for (let j = 0; j < board.cols; j++) {
-                // Give each cell a unique set ID
-                cell_flags[i].push(i % 2 === 0 && j % 2 === 0 ? setId++ : -1);
-                
-                // Only consider cells that can be part of the maze (even coordinates)
-                if (i % 2 === 0 && j % 2 === 0) {
-                    const cell = board.getCell(i, j);
-                    const frontiers = KRUSKAL_DIRECTIONS.map(direction => ({
-                        row: cell.row + direction[0] * 2,
-                        col: cell.col + direction[1] * 2,
-                        direction: direction,
-                        fromRow: cell.row,
-                        fromCol: cell.col
-                    })).filter(frontier => this.isValidFrontier(board, frontier));
-                    frontier_list.push(...frontiers);
+        let cur_flag = 1;
+        let cell_flags = new Array(board.rows).fill(0).map(() => new Array(board.cols).fill(0));
+        for (let i = 0; i < board.rows; i+=2) 
+        {
+            for (let j = 0; j < board.cols; j+=2) 
+            {
+                if (j + KRUSKAL_DIRECTIONS.HORIZONTAL[1] * 2 < board.cols)
+                {
+                    frontier_list.push({
+                        row: i,
+                        col: j,
+                        direction: KRUSKAL_DIRECTIONS.HORIZONTAL
+                    });
                 }
+                if (i + KRUSKAL_DIRECTIONS.VERTICAL[0] * 2 < board.rows)
+                {
+                    frontier_list.push({
+                        row: i,
+                        col: j,
+                        direction: KRUSKAL_DIRECTIONS.VERTICAL
+                    });
+                }
+                cell_flags[i][j] = cur_flag;
+                cur_flag++;                
             }
         }
-        
+
         while (frontier_list.length > 0) {
             const randomIndex = Math.floor(Math.random() * frontier_list.length);
             const frontier = frontier_list[randomIndex];
-            frontier_list.splice(randomIndex, 1);
-            
-            const set1 = cell_flags[frontier.fromRow][frontier.fromCol];
-            const set2 = cell_flags[frontier.row][frontier.col];
-            
-            // Only connect cells from different sets
-            if (set1 !== set2 && set1 !== -1 && set2 !== -1) {
-                // Carve the path
-                board.toggleWall(board.getCell(frontier.row, frontier.col).dom, false);
-                board.toggleWall(board.getCell(
-                    frontier.fromRow + frontier.direction[0],
-                    frontier.fromCol + frontier.direction[1]
-                ).dom, false);
+            const connectingCell = {
+                row: frontier.row + frontier.direction[0] * 2,
+                col: frontier.col + frontier.direction[1] * 2
+            };
+            if (cell_flags[connectingCell.row][connectingCell.col] !== cell_flags[frontier.row][frontier.col]) {
+                const oldFlag = cell_flags[connectingCell.row][connectingCell.col];
+                const newFlag = cell_flags[frontier.row][frontier.col];
                 
-                // Merge sets
-                const oldSet = set2;
-                for (let i = 0; i < cell_flags.length; i++) {
-                    for (let j = 0; j < cell_flags[i].length; j++) {
-                        if (cell_flags[i][j] === oldSet) {
-                            cell_flags[i][j] = set1;
-                        }
+                // Use the existing replaceFlag method instead of inline replacement
+                cell_flags = this.replaceFlag(cell_flags, oldFlag, newFlag);
+                // TODO: move this to a separate function
+                // connect the two cells
+                const added_cells = [];
+                for (let i = frontier.row; i <= connectingCell.row; i++) {
+                    for (let j = frontier.col; j <= connectingCell.col; j++) {
+                        const cell = board.getCell(i, j);
+                        added_cells.push(cell);
                     }
+                }
+                this.animateMaze(board, added_cells);
+            }
+            frontier_list.splice(randomIndex, 1);
+        }
+    }
+
+    replaceFlag(cell_flags, old_flag, new_flag) {
+        for (let i = 0; i < cell_flags.length; i+=2) {
+            for (let j = 0; j < cell_flags[i].length; j+=2) {
+                if (cell_flags[i][j] === old_flag) {
+                    cell_flags[i][j] = new_flag;
                 }
             }
         }
+        return cell_flags;
     }
 
     initializeMazeSelector(selector) {

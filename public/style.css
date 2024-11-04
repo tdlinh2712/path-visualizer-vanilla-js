@@ -203,6 +203,29 @@ header {
     }
 }
 
+.cell:not(.wall) {
+    transition: all 0.3s ease;
+}
+
+.maze-reveal {
+    animation: mazeReveal 0.3s ease-out;
+}
+
+@keyframes mazeReveal {
+    0% {
+        transform: scale(0.8);
+        background-color: #4834d4;
+    }
+    50% {
+        transform: scale(1.05);
+        background-color: rgba(24, 220, 255, 0.75);  /* Cyan with 75% opacity */
+    }
+    100% {
+        transform: scale(1);
+        background-color: rgba(0, 184, 212, 0.75);  /* Teal with 75% opacity */
+    }
+}
+
 /* Media Queries */
 @media (max-width: 875px) {
     .controls {

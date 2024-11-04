@@ -34,7 +34,6 @@ export class Board {
         this.clearWalls();
         this.resetDelayTime();
         this.resetStartAndTarget();
-        this.generateStartAndTarget();
     }
 
     clearBoard()
@@ -130,16 +129,19 @@ export class Board {
 
     generateStartAndTarget()
     {
-        let start_cell = this.getRandomCell();
+        let start_cell = null;
+        do {
+            start_cell = this.getRandomCell();
+        } while (this.isWall(this.getCell(start_cell.row, start_cell.col)));
         this.start_cell = start_cell;
         this.start_cell.dom = this.board.rows[start_cell.row].cells[start_cell.col];
         this.start_cell.dom.innerText = START_SYMBOL;
 
-        let target_cell = { row: start_cell.row, col: start_cell.col };
-        while (target_cell.row === start_cell.row && target_cell.col === start_cell.col)
-        {
-            (target_cell = this.getRandomCell());
-        }
+        let target_cell = null;
+        do {
+            target_cell = this.getRandomCell();
+        } while ((target_cell.row === start_cell.row && target_cell.col === start_cell.col) || this.isWall(this.getCell(target_cell.row, target_cell.col)));
+
         this.target_cell = target_cell;
         this.target_cell.dom = this.board.rows[target_cell.row].cells[target_cell.col];
         this.target_cell.dom.innerText = TARGET_SYMBOL;
@@ -171,7 +173,11 @@ export class Board {
         if (cell.innerText === START_SYMBOL || cell.innerText === TARGET_SYMBOL) {
             return;
         }
-        cell.classList.toggle(WALL_CLASS);
+        cell.classList.add(WALL_CLASS);
+    }
+
+    untoggleWall(cell) {
+        cell.classList.remove(WALL_CLASS);
     }
 
     isWall(cell) {
