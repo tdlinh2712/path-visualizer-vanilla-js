@@ -87,6 +87,7 @@ export class AlgorithmFactory
                 queue.push({...next_cell, prev: prev});
             }
         }
+        return {visited_nodes: seen, found_path: []};
     }
 
     static DFS(board, start_cell, target_cell)

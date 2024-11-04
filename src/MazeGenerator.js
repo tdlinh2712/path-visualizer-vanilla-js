@@ -70,10 +70,8 @@ export class MazeGenerator {
 
     // Placeholder for Prim's algorithm implementation
     primMaze(board) {
-        // 1. Get a random even-numbered cell as the starting point
-        const evenRow = 2 * Math.floor(Math.random() * Math.floor(board.rows / 2));
-        const evenCol = 2 * Math.floor(Math.random() * Math.floor(board.cols / 2));
-        const start_cell = board.getCell(evenRow, evenCol);
+        const start_cell = board.getCell(0, 0);
+        this.animateMaze(board, [start_cell]);
         // Keep track of visited cells to prevent loops
         const visited_cells = new Set();
         visited_cells.add(`${start_cell.row},${start_cell.col}`);
