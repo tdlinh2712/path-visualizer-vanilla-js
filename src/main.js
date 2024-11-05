@@ -6,7 +6,7 @@ import { MazeGenerator } from './MazeGenerator.js';
 
 // Calculate grid size based on window size and cell size
 const CELL_SIZE = 25; // pixels
-const PADDING = 200;   // pixels for padding/margins
+const PADDING = 300;   // pixels for padding/margins
 
 function calculateGridSize() {
     const availableWidth = window.innerWidth - PADDING;

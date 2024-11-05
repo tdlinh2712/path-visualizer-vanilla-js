@@ -1,4 +1,5 @@
 const WALL_CLASS = "wall";
+const NOT_WALL_CLASS = "not-wall";
 
 export class Board {
     constructor(element_id, rows, cols) {
@@ -48,11 +49,13 @@ export class Board {
         this.resetDelayTime();
     }
 
+    fillWithWalls() {
+        this.board.classList.add('fill-walls');
+    }
+
     clearWalls() {
-        for (let i = 0 ; i < this.rows; i++)
-        {
-            for (let j = 0; j < this.cols; j++)
-            {
+        for (let i = 0; i < this.rows; i++) {
+            for (let j = 0; j < this.cols; j++) {
                 const cell = this.board.rows[i].cells[j];
                 cell.classList.remove(WALL_CLASS);
             }
@@ -184,11 +187,7 @@ export class Board {
             (this.target_cell && row === this.target_cell.row && col === this.target_cell.col)) {
             return;
         }
-        if (cell.classList.contains(WALL_CLASS)) {
-            this.untoggleWall(cell);
-        } else {    
-            cell.classList.add(WALL_CLASS);
-        }
+        cell.classList.add(WALL_CLASS);
     }
 
     untoggleWall(cell) {
