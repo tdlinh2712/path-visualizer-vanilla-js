@@ -1,6 +1,9 @@
 # Path Finding Visualizer
 
-A vanilla JavaScript implementation of popular pathfinding algorithms and maze generation algorithms with interactive visualization.
+A visualization tool of popular pathfinding algorithms and maze generation algorithms using using vanilla JavaScript.
+
+## 🔗 [Live Demo](https://tdlinh2712.github.io/path-visualizer-vanilla-js/)
+
 
 ## 🚀 Features
 
