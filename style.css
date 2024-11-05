@@ -1,0 +1,324 @@
+@font-face {
+    font-family: "JetBrains Sans";
+    src: url("fonts/JetBrainsSans-Regular.woff2");
+}
+
+@font-face {
+    font-family: "JetBrains Mono";
+    src: url("fonts/JetBrainsMono-Regular.woff2");
+}
+
+:root {
+    font-family: "JetBrains Sans", Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.87);
+    background-color: #000000;
+}
+
+body {
+    background: black;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.title {
+    font-size: 2.5rem;
+    margin: 0 0 40px 0;
+}
+
+.controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background-color: rgba(25, 25, 28, 0.5);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+#algorithmDescriptor {
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.87);
+}
+
+.algorithm-selector {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.algorithm-selector label {
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.87);
+}
+
+#algorithm-btn {
+    padding: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    font-size: 1rem;
+    min-width: 150px;
+    background-color: rgba(25, 25, 28, 0.5);
+    color: rgba(255, 255, 255, 0.87);
+}
+
+.button-group {
+    display: flex;
+    gap: 1rem;
+}
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: "JetBrains Mono", Inter, system-ui, sans-serif;
+}
+
+#start-btn {
+    background-color: #4834d4;
+    color: white;
+}
+
+#start-btn:hover {
+    background-color: #686de0;
+}
+
+#reset-btn {
+    background-color: #e17055;
+    color: white;
+}
+
+#reset-btn:hover {
+    background-color: #ff7675;
+}
+
+.grid-container {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 2rem;
+}
+
+#board {
+    width: 100%;
+    margin: 0 auto;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+#board td {
+    width: 25px;
+    height: 25px;
+    padding: 0;
+    border: 1px solid rgb(175, 216, 248);
+    text-align: center;
+    vertical-align: middle;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+/* Animation Styles */
+.visitedNode {
+    animation: visitedAnimation 1.5s ease-in-out;
+    animation-fill-mode: forwards;
+}
+
+@keyframes visitedAnimation {
+    0% {
+        transform: scale(0.3);
+        background-color: rgba(24, 220, 255, 0.75); /* Bright cyan */
+        border-radius: 100%;
+    }
+    50% {
+        transform: scale(1.2);
+        background-color: rgba(0, 184, 212, 0.75); /* Mid teal */
+    }
+    100% {
+        transform: scale(1.0);
+        background-color: rgba(0, 151, 167, 0.75); /* Deep teal */
+        border: 1px solid rgb(175, 216, 248);
+    }
+}
+
+.shortestPath {
+    animation: shortestPathAnimation 1.5s ease-out;
+    animation-fill-mode: forwards;
+}
+
+@keyframes shortestPathAnimation {
+    0% {
+        transform: scale(0.6);
+        background-color: #ffd32a;
+    }
+    50% {
+        transform: scale(1.2);
+        background-color: #ffa801;
+    }
+    100% {
+        transform: scale(1.0);
+        background-color: #ff9f1a;
+    }
+}
+
+.wall {
+    background-color: #4834d4 !important;
+    border: 1px solid #686de0 !important;
+    animation: wallAnimation 0.3s ease-in-out;
+}
+
+@keyframes wallAnimation {
+    0% {
+        transform: scale(0.3);
+        background-color: #686de0;
+    }
+    50% {
+        transform: scale(1.2);
+        background-color: #4834d4;
+    }
+    100% {
+        transform: scale(1.0);
+        background-color: #4834d4;
+    }
+}
+
+.cell:not(.wall) {
+    transition: all 0.3s ease;
+}
+
+.maze-reveal {
+    animation: mazeReveal 0.3s ease-out;
+}
+
+@keyframes mazeReveal {
+    0% {
+        transform: scale(0.8);
+        background-color: #4834d4;
+    }
+    50% {
+        transform: scale(1.05);
+        background-color: rgba(24, 220, 255, 0.75);  /* Cyan with 75% opacity */
+    }
+    100% {
+        transform: scale(1);
+        background-color: rgba(0, 184, 212, 0.75);  /* Teal with 75% opacity */
+    }
+}
+
+/* Media Queries */
+@media (max-width: 875px) {
+    .controls {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .button-group {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .algorithm-selector {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+
+/* Add these with your other control styles */
+.maze-selector {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.maze-selector label {
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.87);
+}
+
+#maze-btn {
+    padding: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    font-size: 1rem;
+    min-width: 150px;
+    background-color: rgba(25, 25, 28, 0.5);
+    color: rgba(255, 255, 255, 0.87);
+}
+
+#generate-maze-btn {
+    background-color: #6c5ce7;
+    color: white;
+}
+
+#generate-maze-btn:hover {
+    background-color: #7d6cf9;
+}
+
+.start-cell {
+    background: linear-gradient(45deg, #2ecc71, #27ae60);
+    position: relative;
+    overflow: hidden;
+}
+
+.start-cell::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 0;
+    height: 0;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-left: 12px solid white;
+}
+
+.target-cell {
+    background: linear-gradient(45deg, #e74c3c, #c0392b);
+    position: relative;
+    overflow: hidden;
+}
+
+.target-cell::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 12px;
+    height: 12px;
+    border: 2px solid white;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
