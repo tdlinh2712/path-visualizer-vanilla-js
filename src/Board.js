@@ -11,6 +11,8 @@ export class Board {
         this.target_cell = null;
         this.isMouseDown = false;
         this.addWallEventListeners();
+        this.visitedNodes = [];
+        this.foundPath = [];
     }
 
     // Initializations, reset board etc
@@ -37,15 +39,18 @@ export class Board {
 
     clearBoard()
     {
-        for (let i = 0 ; i < this.rows; i++)
+        this.visitedNodes.forEach((cell, i) => 
         {
-            for (let j = 0; j < this.cols; j++)
+            const cell_dom = this.board.rows[cell.row].cells[cell.col];
+            cell_dom.classList.remove("visitedNode");
+        });
+
+        this.foundPath.forEach((cell, i) => 
             {
-                const cell = this.board.rows[i].cells[j];
-                cell.classList.remove("visitedNode");
-                cell.classList.remove("shortestPath");
-            }
-        }
+                const cell_dom = this.board.rows[cell.row].cells[cell.col];
+                cell_dom.classList.remove("shortestPath");
+            });
+
         this.resetDelayTime();
     }
 
@@ -86,8 +91,8 @@ export class Board {
                 cell_dom.className = "visitedNode";
                 }, i * 2 + this.currentDelay);
         });
-
         this.currentDelay += visitedNodes.length * 2;
+        this.visitedNodes = visitedNodes;
     }
 
     visualizeFoundPath(foundPath)
@@ -102,6 +107,7 @@ export class Board {
             }, i * 5 + this.currentDelay);
         });
         this.currentDelay += foundPath.length * 5;
+        this.foundPath = foundPath;
     }
 
     // algorithms
@@ -175,6 +181,30 @@ export class Board {
         window.addEventListener('mouseup', () => {
             this.isMouseDown = false;
         });
+    }
+
+    resetToWalls() {
+        this.clearBoard();
+        this.resetDelayTime();
+        this.resetStartAndTarget();
+        const fragment = document.createDocumentFragment();
+        
+        // 1. Build new table structure in memory (not in DOM yet)
+        for (let row = 0; row < this.rows; row++) {
+            const tr = document.createElement('tr');
+            for (let col = 0; col < this.cols; col++) {
+                const td = document.createElement('td');
+                td.classList.add('wall');
+                tr.appendChild(td);
+            }
+            fragment.appendChild(tr);
+        }
+        
+        // 2. Clear existing table completely
+        this.board.innerHTML = '';
+        
+        // 3. Add new table structure
+        this.board.appendChild(fragment);  // Replaces empty content with new table
     }
 
     toggleWall(cell) {

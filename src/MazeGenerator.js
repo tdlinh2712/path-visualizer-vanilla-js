@@ -64,18 +64,12 @@ export class MazeGenerator {
 
     initializeMaze(board) {
         this.currentDelay = 0;
-        board.resetBoard();
-        for (let i = 0; i < board.rows; i++) {
-            for (let j = 0; j < board.cols; j++) {
-                board.toggleWall(board.getCell(i, j).dom);
-            }
-        }
+        board.resetToWalls();
     }
 
     isValidFrontier(board, frontier) {
         return board.valid_cell(frontier) && board.isWall(frontier);
     }
-
 
     replaceFlag(cell_flags, old_flag, new_flag) {
         for (let i = 0; i < cell_flags.length; i+=2) {

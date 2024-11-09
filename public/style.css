@@ -184,7 +184,7 @@ header {
 .wall {
     background-color: #4834d4 !important;
     border: 1px solid #686de0 !important;
-    animation: wallAnimation 0.3s ease-in-out;
+    /* animation: wallAnimation 0.3s ease-in-out; */
 }
 
 @keyframes wallAnimation {
