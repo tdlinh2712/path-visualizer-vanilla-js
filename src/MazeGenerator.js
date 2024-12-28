@@ -294,13 +294,16 @@ export class MazeGenerator {
             
             // Step 3: For each set in current row, randomly connect at least one cell vertically
             set_id_to_col.forEach((connected_cols, key) => {
-                // Choose a random column from the current set
-                let random_index = Math.floor(Math.random() * connected_cols.length);
-                let connected_col = connected_cols[random_index];
-                // Connect it to the cell below by giving it the same set ID
-                next_row[connected_col] = key;
-                // Carve a vertical path by removing walls
-                this.animateMaze(board, [board.getCell(row, connected_col), board.getCell(row+1, connected_col), board.getCell(row+2, connected_col)]);
+                for (let j = 0; j < connected_cols.length * 0.6; j++)
+                {
+                    // Choose a random column from the current set
+                    let random_index = Math.floor(Math.random() * connected_cols.length);
+                    let connected_col = connected_cols[random_index];
+                    // Connect it to the cell below by giving it the same set ID
+                    next_row[connected_col] = key;
+                    // Carve a vertical path by removing walls
+                    this.animateMaze(board, [board.getCell(row, connected_col), board.getCell(row+1, connected_col), board.getCell(row+2, connected_col)]);
+                }
             });
 
             // Step 4: Reset and rebuild the set_id_to_col map for the next row

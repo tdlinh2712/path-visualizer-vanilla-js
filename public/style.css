@@ -129,7 +129,7 @@ header {
     width: 25px;
     height: 25px;
     padding: 0;
-    border: 1px solid rgb(175, 216, 248);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     text-align: center;
     vertical-align: middle;
     user-select: none;
@@ -142,6 +142,7 @@ header {
 .visitedNode {
     animation: visitedAnimation 1.5s ease-in-out;
     animation-fill-mode: forwards;
+    border: 1px solid rgba(104, 109, 224, 0.1) !important; /* Border color with 0.1 opacity */
 }
 
 @keyframes visitedAnimation {
@@ -157,13 +158,14 @@ header {
     100% {
         transform: scale(1.0);
         background-color: rgba(0, 151, 167, 0.75); /* Deep teal */
-        border: 1px solid rgb(175, 216, 248);
+        border: 1px solid rgb(175, 216, 248, 0.1);
     }
 }
 
 .shortestPath {
     animation: shortestPathAnimation 1.5s ease-out;
     animation-fill-mode: forwards;
+    border: 1px solid rgba(104, 109, 224, 0.1) !important; /* Border color with 0.1 opacity */
 }
 
 @keyframes shortestPathAnimation {
@@ -183,7 +185,7 @@ header {
 
 .wall {
     background-color: #4834d4 !important;
-    border: 1px solid #686de0 !important;
+    border: 1px solid rgba(104, 109, 224, 0.1) !important; /* Border color with 0.1 opacity */
     /* animation: wallAnimation 0.3s ease-in-out; */
 }
 
