@@ -63,7 +63,7 @@ export class MazeGenerator {
     }
 
     initializeMaze(board) {
-        this.currentDelay = 0;
+        this.currentDelay = 2000;
         board.resetToWalls();
     }
 
@@ -101,7 +101,9 @@ export class MazeGenerator {
 
     // Placeholder for Prim's algorithm implementation
     primMaze(board) {
-        const start_cell = board.getCell(0, 0);
+        const start_row = Math.floor(Math.random() * board.rows/2) * 2;
+        const start_col = Math.floor(Math.random() * board.cols/2) * 2;
+        const start_cell = board.getCell(start_row, start_col);
         this.animateMaze(board, [start_cell]);
         // Keep track of visited cells to prevent loops
         const visited_cells = new Set();
