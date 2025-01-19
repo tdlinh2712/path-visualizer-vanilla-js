@@ -59,7 +59,8 @@ export class MazeGenerator {
                 }
             });
         }, this.currentDelay);
-        this.currentDelay += 10;
+        console.log(this.currentDelay);
+        this.currentDelay += -parseInt(document.getElementById("speed-range").value);
     }
 
     initializeMaze(board) {
