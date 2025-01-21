@@ -36,7 +36,7 @@ export class Board {
         this.clearWalls();
         this.resetDelayTime();
         this.resetStartAndTarget();
-        this.stat = { visited_cells: 0, path_length: 0, elapsedTime: 0 };
+        this.resetStat();
     }
 
     clearBoard()
@@ -79,6 +79,10 @@ export class Board {
         }
         this.start_cell = null;
         this.target_cell = null;
+    }
+
+    resetStat() {
+        this.stat = { visited_cells: 0, path_length: 0, elapsedTime: 0 };
     }
     // visualizing paths
 
@@ -123,18 +127,19 @@ export class Board {
         this.foundPath = new_path;
         this.stat.path_length = this.foundPath.length;
     }
-
+    
     displayStat() {
         const statElement = document.getElementById("stat");
         statElement.innerHTML = `
             <div class="stat-value">Visited Nodes: ${this.stat.visited_cells}</div>
             <div class="stat-value">Path Length: ${this.stat.path_length}</div>
-            <div class="stat-value">Time Elapsed: ${this.stat.elapsedTime}</div>
+            <div class="stat-value">Time Elapsed: ${this.stat.elapsedTime}s</div>
         `;
     }
 
     visualizePathFindingAlgorithm(func)
     {
+        this.resetStat();
         this.foundPath = []
         const startTime = Date.now();
         const id = setInterval(() => {
@@ -158,7 +163,7 @@ export class Board {
             // animate current_path
             this.visualizeFoundPath(current_path);
             this.displayStat();
-        }, document.getElementById("speed-range").value * -5);
+        }, (document.getElementById("speed-range").max - document.getElementById("speed-range").value) * 5);
     }
 
     // algorithms
