@@ -51,9 +51,8 @@ reset_button.addEventListener("click", () => {
 start_button.addEventListener("click", () => {
     // clear all current css
     board.clearBoard();
-    const { visited_nodes, found_path } = algorithm_factory.findPath(board, board.start_cell, board.target_cell);
-    board.visualizeVisitedNodes(visited_nodes);
-    board.visualizeFoundPath(found_path);
+    const generator = algorithm_factory.findPath(board, board.start_cell, board.target_cell);
+    board.visualizePathFindingAlgorithm(generator);
 });
 
 const maze_generator = new MazeGenerator();

@@ -60,13 +60,15 @@ export class AlgorithmFactory
                 return {visited_nodes: [], found_path: []}
         }
     }
+    
 
-    static BFS(board, start_cell, target_cell)
+    static *BFS(board, start_cell, target_cell)
     {
         let seen = [];
         let queue = [];
         queue.push({...start_cell, prev: [start_cell] });
         seen.push(start_cell);
+        yield [start_cell, []];
         while (queue.length > 0)
         {
             const cur_cell = queue.shift();
@@ -79,6 +81,7 @@ export class AlgorithmFactory
                 }
                 seen.push(next_cell);
                 const prev = [...cur_cell.prev, next_cell];
+                yield [next_cell, prev];
                 if (is_target(next_cell, target_cell))
                 {
                     // found target
@@ -90,19 +93,46 @@ export class AlgorithmFactory
         return {visited_nodes: seen, found_path: []};
     }
 
-    static DFS(board, start_cell, target_cell)
+    // static *DFS(board, start_cell, target_cell)
+    // {
+    //     let current_path = [];
+    //     return AlgorithmFactory.DFSImpl(board, start_cell, target_cell, current_path);
+    // }
+
+    static *DFS(board, start_cell, target_cell)
     {
         let seen = [];
-        let current_path = [];
-        return AlgorithmFactory.DFSImpl(board, start_cell, target_cell, current_path);
+        let stack = [{ ...start_cell, found_path: [start_cell] }];
+        while (stack.length > 0)
+        {
+            const cur_cell = stack.at(-1);
+            seen.push(cur_cell);
+            stack.pop();
+            yield [cur_cell, cur_cell.found_path];
+            for (let i = 0; i < CELL_DIRECTIONS.length; i++)
+            {
+                const next_cell = {row: cur_cell.row + CELL_DIRECTIONS[i][0], col:  cur_cell.col + CELL_DIRECTIONS[i][1]};
+                if (should_skip_cell(next_cell, board, cur_cell.found_path)) {
+                    continue;
+                }
+                if (is_target(next_cell, target_cell))
+                {
+                    return {visited_nodes: seen, found_path: [...cur_cell.found_path, next_cell]};
+                }
+                stack.push({ ...next_cell, found_path: [...cur_cell.found_path, next_cell]});
+            }
+        }
+        return {visited_nodes: seen, found_path: []};
+
     }
 
-    static DFSImpl(board, cur_cell, target_cell, seen)
+    static *DFSImpl(board, cur_cell, target_cell, seen)
     {
         seen.push(cur_cell);
         if (is_target(cur_cell, target_cell))
         {
             // found target
+            yield [cur_cell, [cur_cell]];
             return {visited_nodes: seen, found_path: [cur_cell]};
         }
         for (let i = 0; i < CELL_DIRECTIONS.length; i++)
@@ -116,13 +146,14 @@ export class AlgorithmFactory
             const { found_path } = AlgorithmFactory.DFSImpl(board, next_cell, target_cell, seen);
             if (found_path.length > 0)
             {
+                yield [cur_cell, [ cur_cell, ...found_path]];
                 return {visited_nodes: seen, found_path: [ cur_cell, ...found_path] };
             }
         }
         return {visited_nodes: seen, found_path: []};
     }
 
-    static Dijikstra(board, start_cell, target_cell)
+    static *Dijikstra(board, start_cell, target_cell)
     {
         let visited_nodes = [];
         let unvisited = new PriorityQueue();
@@ -138,6 +169,7 @@ export class AlgorithmFactory
                 continue;
             }
             visited_nodes.push(smallest_node);
+            yield [smallest_node , smallest_node.path];
             // otherwise, keep updating adjacent node
             for (let i = 0; i < CELL_DIRECTIONS.length; i++) {
                 const next_cell = {
@@ -152,7 +184,7 @@ export class AlgorithmFactory
         return {visited_nodes, found_path: []};
     }
 
-    static AStar(board, start_cell, target_cell)
+    static *AStar(board, start_cell, target_cell)
     {
         let visited_nodes = [];
         let unvisited = new PriorityQueue();
@@ -169,6 +201,7 @@ export class AlgorithmFactory
                 continue;
             }
             visited_nodes.push(smallest_node);
+            yield [smallest_node , smallest_node.path];
             // otherwise, keep updating adjacent node
             for (let i = 0; i < CELL_DIRECTIONS.length; i++) {
                 const next_cell = {

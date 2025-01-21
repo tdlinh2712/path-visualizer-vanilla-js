@@ -13,6 +13,7 @@ export class Board {
         this.addWallEventListeners();
         this.visitedNodes = [];
         this.foundPath = [];
+        this.stat = { visited_cells: 0, path_length: 0, elapsedTime: 0 };
     }
 
     // Initializations, reset board etc
@@ -35,6 +36,7 @@ export class Board {
         this.clearWalls();
         this.resetDelayTime();
         this.resetStartAndTarget();
+        this.stat = { visited_cells: 0, path_length: 0, elapsedTime: 0 };
     }
 
     clearBoard()
@@ -80,34 +82,83 @@ export class Board {
     }
     // visualizing paths
 
-    visualizeVisitedNodes(visitedNodes)
+    visualizeNewVisitedCell(cell)
     {
-        visitedNodes.forEach((cell, i) => {
-            if (this.isStart(cell) || this.isTarget(cell)) {
-                return;
-            }
-            const cell_dom = this.board.rows[cell.row].cells[cell.col];
-            setTimeout(() => {
-                cell_dom.className = "visitedNode";
-                }, i * 2 + this.currentDelay);
-        });
-        this.currentDelay += visitedNodes.length * 2;
-        this.visitedNodes = visitedNodes;
+        if(this.containsClass(cell, "visitedNode")) {
+            return;
+        }
+        if (this.isStart(cell) || this.isTarget(cell)) {
+            return;
+        }
+        this.stat.visited_cells += 1;
+        const cell_dom = this.board.rows[cell.row].cells[cell.col];
+        cell_dom.className = "visitedNode";
     }
 
-    visualizeFoundPath(foundPath)
+    visualizeFoundPath(new_path)
     {
-        foundPath.forEach((cell, i) => {
+        let diff_index = Math.min(new_path.length, this.foundPath.length)
+            // undo the differences
+            for (let i = 1; i < Math.min(new_path.length, this.foundPath.length); i++)
+            {
+                const new_cell = new_path[i];
+                const curr_cell = this.foundPath[i];
+                if (new_cell.row != curr_cell.row || new_cell.col != curr_cell.col)
+                {
+                    diff_index = i;
+                    break;
+                }
+            }
+        this.foundPath.slice(diff_index).forEach((cell, i) => {
+            const cell_dom = this.board.rows[cell.row].cells[cell.col];
+            cell_dom.className = "visitedNode";
+        })
+        new_path.slice(diff_index).forEach((cell, i) => {
             if (this.isStart(cell) || this.isTarget(cell)) {
                 return;
             }
             const cell_dom = this.board.rows[cell.row].cells[cell.col];
-            setTimeout(() => {
-                cell_dom.className = "shortestPath";
-            }, i * 5 + this.currentDelay);
+            cell_dom.className = "shortestPath";
         });
-        this.currentDelay += foundPath.length * 5;
-        this.foundPath = foundPath;
+        this.foundPath = new_path;
+        this.stat.path_length = this.foundPath.length;
+    }
+
+    displayStat() {
+        const statElement = document.getElementById("stat");
+        statElement.innerHTML = `
+            <div class="stat-value">Visited Nodes: ${this.stat.visited_cells}</div>
+            <div class="stat-value">Path Length: ${this.stat.path_length}</div>
+            <div class="stat-value">Time Elapsed: ${this.stat.elapsedTime}</div>
+        `;
+    }
+
+    visualizePathFindingAlgorithm(func)
+    {
+        this.foundPath = []
+        const startTime = Date.now();
+        const id = setInterval(() => {
+            const current_time = Date.now();
+            this.stat.elapsedTime = (Date.now() - startTime) / 1000; // Calculate elapsed time in seconds
+            const result = func.next();
+            if (result.done)
+            {
+                
+                clearInterval(id);
+                const {visited_nodes, found_path} = result.value;
+                this.visitedNodes = visited_nodes;
+                // this.foundPath = found_path;
+                this.visualizeFoundPath(found_path);
+                this.displayStat();
+                return;
+            }
+            const [new_visited_node, current_path] = result.value;
+            // animate new_visited_node
+            this.visualizeNewVisitedCell(new_visited_node);
+            // animate current_path
+            this.visualizeFoundPath(current_path);
+            this.displayStat();
+        }, document.getElementById("speed-range").value * -5);
     }
 
     // algorithms
@@ -234,5 +285,9 @@ export class Board {
 
     isStart(cell) {
         return cell.row === this.start_cell.row && cell.col === this.start_cell.col;
+    }
+
+    containsClass(cell, className) {
+        return this.board.rows[cell.row].cells[cell.col].classList.contains(className);
     }
 }

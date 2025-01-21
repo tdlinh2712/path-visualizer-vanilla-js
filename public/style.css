@@ -69,6 +69,29 @@ header {
     color: rgba(255, 255, 255, 0.87);
 }
 
+.stat-display {
+    flex: 1; /* Allow the stat-display to grow and fill available space */
+    margin: 0 1rem; /* Optional: Add horizontal margin for spacing */
+    min-height: 70px;
+    height: 70px; /* Set a fixed height */
+    overflow: auto; /* Allow scrolling if content exceeds height */
+    color: rgba(255, 255, 255, 0.87); /* White text */
+    padding: 0.5rem; /* Padding for spacing */
+    border-radius: 5px; /* Slightly rounded corners */
+    font-family: "JetBrains Mono", monospace; /* Monospace font */
+    font-size: 1rem; /* Font size */
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.3); /* Subtle shadow */
+}
+
+.stat-title {
+    font-weight: bold; /* Bold title */
+    font-size: 1.1rem; /* Slightly larger font size for title */
+}
+
+.stat-value {
+    font-weight: normal; /* Normal weight for values */
+}
+
 #algorithm-btn {
     padding: 0.5rem;
     border: 1px solid rgba(255, 255, 255, 0.3);
@@ -140,8 +163,10 @@ header {
 
 /* Animation Styles */
 .visitedNode {
-    animation: visitedAnimation 1.5s ease-in-out;
-    animation-fill-mode: forwards;
+    /* animation: visitedAnimation 1.5s ease-in-out;
+    animation-fill-mode: forwards; */
+    background-color: rgba(0, 151, 167, 0.75); 
+        border: 1px solid rgb(175, 216, 248, 0.1);
     border: 1px solid rgba(104, 109, 224, 0.1) !important; /* Border color with 0.1 opacity */
 }
 
@@ -163,8 +188,7 @@ header {
 }
 
 .shortestPath {
-    animation: shortestPathAnimation 1.5s ease-out;
-    animation-fill-mode: forwards;
+    background-color: #ff9f1a;
     border: 1px solid rgba(104, 109, 224, 0.1) !important; /* Border color with 0.1 opacity */
 }
 
@@ -243,6 +267,12 @@ header {
         flex-direction: column;
         align-items: stretch;
     }
+
+    .stat-display {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
 }
 
 /* Add these with your other control styles */
@@ -324,3 +354,4 @@ header {
         transform: scale(1);
     }
 }
+

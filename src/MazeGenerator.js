@@ -59,7 +59,6 @@ export class MazeGenerator {
                 }
             });
         }, this.currentDelay);
-        console.log(this.currentDelay);
         this.currentDelay += -parseInt(document.getElementById("speed-range").value);
     }
 
